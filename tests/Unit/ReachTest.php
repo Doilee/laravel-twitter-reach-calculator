@@ -6,6 +6,10 @@ use App\Http\Controllers\CalculatesTweetReach;
 use Dotenv\Exception\ValidationException;
 use Tests\TestCase;
 
+/**
+ * Class ReachTest
+ * @package Tests\Unit
+ */
 class ReachTest extends TestCase
 {
     use CalculatesTweetReach;

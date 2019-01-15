@@ -4,6 +4,10 @@ namespace App\Twitter;
 
 use Twitter;
 
+/**
+ * Class MyTwitter
+ * @package App\Twitter
+ */
 class MyTwitter extends Twitter
 {
     public function __construct()

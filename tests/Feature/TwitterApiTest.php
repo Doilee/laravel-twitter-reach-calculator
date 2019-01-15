@@ -5,6 +5,10 @@ namespace Tests\Feature;
 use App\Http\Controllers\CalculatesTweetReach;
 use Tests\TestCase;
 
+/**
+ * Class TwitterApiTest
+ * @package Tests\Feature
+ */
 class TwitterApiTest extends TestCase
 {
     use CalculatesTweetReach;

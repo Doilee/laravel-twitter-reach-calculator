@@ -4,6 +4,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class TweetUrl
+ * @package App\Http\Requests
+ */
 class TweetUrl extends FormRequest
 {
     /**

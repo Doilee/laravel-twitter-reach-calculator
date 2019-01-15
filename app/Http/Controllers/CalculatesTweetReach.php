@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Twitter\MyTwitter;
 use Dotenv\Exception\ValidationException;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Trait CalculatesTweetReach
@@ -18,23 +19,34 @@ trait CalculatesTweetReach
     /**
      * @param $url
      *
+     * @return string
+     */
+    protected function getTweetIdFromUrl($url) : string
+    {
+        return array_last(explode('/', $url));
+    }
+
+    /**
+     * @param $url
+     *
      * @return array
      */
-    protected function calculateTweetReach($url) : array
+    protected function getReachFromUrl($url) : array
     {
         $this->validateTwitterUrl($url);
 
-        $id = array_last(explode('/', $url));
+        $id = $this->getTweetIdFromUrl($url);
+
+        if (Cache::has('tweet-' . $id))
+            return Cache::get('tweet-' . $id);
 
         $retweets = $this->getRetweets($id);
 
-        $retweeters = array_pluck($retweets, 'user');
-        $followers_count_sum = array_sum(array_pluck($retweeters, 'followers_count'));
+        $reach = $this->calculateReachFromRetweets($retweets);
 
-        return [
-            'count' => $followers_count_sum,
-            'retweeters' => $retweeters
-        ];
+        Cache::put('tweet-' . $id, $reach, 120);
+
+        return $reach;
     }
 
     /**
@@ -59,5 +71,23 @@ trait CalculatesTweetReach
     protected function getRetweets($id) : array
     {
         return (new MyTwitter)->request('statuses/retweets/' .  $id , 'GET', ['count' => 100]);
+    }
+
+    /**
+     * @param $retweets
+     *
+     * @return array
+     */
+    protected function calculateReachFromRetweets($retweets) : array
+    {
+        $retweeters = array_pluck($retweets, 'user');
+        $followers_count_sum = array_sum(array_pluck($retweeters, 'followers_count'));
+
+        $reach = [
+            'count'      => $followers_count_sum,
+            'retweeters' => $retweeters
+        ];
+
+        return $reach;
     }
 }

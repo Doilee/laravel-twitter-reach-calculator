@@ -3,7 +3,9 @@
 namespace Tests\Unit;
 
 use App\Http\Controllers\CalculatesTweetReach;
+use App\Http\Controllers\TwitterController;
 use Dotenv\Exception\ValidationException;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 /**
@@ -20,8 +22,7 @@ class ReachTest extends TestCase
      */
     public function testPopularTweet()
     {
-        // dd($this->getRetweets('1076239448461987841'));
-        $reach = $this->calculateTweetReach('https://twitter.com/realDonaldTrump/status/1076239448461987841');
+        $reach = $this->getReachFromUrl('https://twitter.com/realDonaldTrump/status/1076239448461987841');
 
         $this->assertGreaterThan(15000, $reach['count']); // At the time of making this test it's 33606
 
@@ -35,7 +36,7 @@ class ReachTest extends TestCase
      */
     public function testLessPopularTweet()
     {
-        $reach = $this->calculateTweetReach('https://twitter.com/nutrition_facts/status/1078327187202367490');
+        $reach = $this->getReachFromUrl('https://twitter.com/nutrition_facts/status/1078327187202367490');
 
         $this->assertLessThan(15000, $reach['count']); // At the time of making this test it's 14172
 
@@ -60,5 +61,20 @@ class ReachTest extends TestCase
         $this->expectException(ValidationException::class);
 
         $this->validateTwitterUrl('https://tweetboy.com/nutrition_facts/status/1078327187202367490');
+    }
+
+    /**
+     * Tests if Cache result is stored
+     */
+    public function testCacheResults() {
+        Cache::shouldReceive('has')
+            ->once()
+            ->with('tweet-1027577955181051904')
+        ;
+        Cache::shouldReceive('put')
+            ->once()
+            ->with('tweet-1027577955181051904', ['count' => 0, 'retweeters' => []], 120);
+
+        $this->getReachFromUrl('https://twitter.com/wonderkind/status/1027577955181051904');
     }
 }

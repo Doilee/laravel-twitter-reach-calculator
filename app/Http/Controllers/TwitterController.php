@@ -15,11 +15,11 @@ class TwitterController extends Controller
     /**
      * @param TweetUrl $request
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\View\View
      */
-    public function reach(TweetUrl $request)
+    public function reach(TweetUrl $request) : \Illuminate\View\View
     {
-        $reach = $this->calculateTweetReach($request->get('url'));
+        $reach = $this->getReachFromUrl($request->get('url'));
 
         return view('welcome', ['reach' => $reach]);
     }

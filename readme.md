@@ -23,6 +23,11 @@ Check to see if the tests are A OK!
 phpunit
 ```
 
+And run
+```$xslt
+php artisan serve
+```
+
 ### If you have problems running the tests
 
 Make sure to run these every time after you run: 
